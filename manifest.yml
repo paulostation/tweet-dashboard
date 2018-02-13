@@ -1,0 +1,4 @@
+applications:
+  - name: tweet-dashboard
+    random-route: true
+    memory: 128M
