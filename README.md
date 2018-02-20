@@ -8,5 +8,5 @@ Usage
 ---
 
 ```
-DEBUG=app npm start
+DEBUG=app:* npm start
 ```
