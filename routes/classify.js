@@ -56,6 +56,38 @@ router.get('/', function (req, res, next) {
 
 });
 
+router.get('/positives', function (req, res, next) {
+
+    analyzed_tweets.find({
+        "selector": {
+           "timestamp": {
+              "$gt": 1
+           },
+           "analysis.sentiment.document.label": "positive"
+        },
+        "fields": [
+           "analysis.sentiment.document.label",
+           "timestamp"
+        ],
+        "sort": [
+           {
+              "timestamp": "asc"
+           }
+        ]
+     }, function (err, body, header) {
+        if (err) {
+            reject(err.message);
+        } else {
+
+            console.log('You have inserted the analyzed tweet.');
+            
+            res.send(body);
+        }
+    });
+
+
+});
+
 function saveResultToCloudant(data) {
     return new Promise((resolve, reject) => {
 

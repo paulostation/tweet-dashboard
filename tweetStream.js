@@ -20,7 +20,7 @@ module.exports = function (app) {
 
     var Twitter = new TwitterStream(keys, false);
     Twitter.stream('statuses/filter', {
-        track: 'lula,bolsonaro'
+        track: 'lula'
     });
 
     Twitter.on("data", function (data) {
@@ -29,7 +29,7 @@ module.exports = function (app) {
 
         if (tweet.lang === "pt") {
 
-            console.log(tweet.text, "\n");
+            // console.log(tweet.text, "\n");
             io.emit('tweet', tweet);
 
         }
