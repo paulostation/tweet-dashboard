@@ -16,126 +16,72 @@ var cloudant = Cloudant({ account: me, key: key, password: password });
 
 var analyzed_tweets = cloudant.db.use('analyzed_tweet')
 
+function getTweets(type) {
+    return new Promise((resolve, reject) => {
+        analyzed_tweets.view('tweets-by-timestamp', type,
+            {
+                'group': true
+            }
+            , function (err, body) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(body.rows);
+                }
+            });
+    });
+}
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
 
-    analyzed_tweets.find({
-        "selector": {
-            "timestamp": {
-                "$gt": 1
-            }
-        },
-        "fields": [
-            "analysis.sentiment.document.label",
-            "timestamp"
-        ],
-        "sort": [
-            {
-                "timestamp": "asc"
-            }
-        ]
+    let positiveTweets;
+    let negativeTweets;
 
-    }, function (err, body, header) {
-        if (err) {
-            console.log(err);
-        } else {
-            let coefficient = 60 * 60 * 60;
-
-            let test = [];
-            let timestamps = [];
-
-            positive = body.docs.filter((tweet, index, array) => {
-
-                return tweet.analysis.sentiment.document.label === "positive"
-
-            }).map((tweet, index, array) => {
-
+    getTweets("positive")
+        .then(result => {
+            positiveTweets = result.map(element => {
                 return {
-                    sentiment: tweet.analysis.sentiment.document.label,
-                    timestamp: (tweet.timestamp - (tweet.timestamp % coefficient)),
-                    count: 1
+                    t: element.key,
+                    y: element.value,
+                    sentiment: "positive"
                 }
             })
+        })
+        .catch(next);
 
-            positive.forEach((tweet, index, array) => {
-
-
-                if (!timestamps.find(function (element) {
-                    return element === tweet.timestamp;
-
-                })) {
-                    timestamps.push(tweet.timestamp);
-                } 
-            })
-
-            positiveFiltered = [];
-
-            timestamps.map((timestamp, index, array) => {
-
-
-                let positiveTweet = positive.filter(tweet => {
-
-                    return tweet.timestamp === timestamp;
-                })
-
-                if (positiveTweet.length === 1) {
-                    positiveFiltered.push(positiveTweet[0]);
-                } else if (positiveTweet.length > 1) {
-                    positiveTweet[0].count = positiveTweet.length;
-                    positiveFiltered.push(positiveTweet[0]);
-                }
-
-            })
-
-            negative = body.docs.filter((tweet, index, array) => {
-
-                return tweet.analysis.sentiment.document.label === "negative"
-
-            }).map((tweet, index, array) => {
-
+    getTweets("negative")
+        .then(result => {
+            negativeTweets = result.map(element => {
                 return {
-                    sentiment: tweet.analysis.sentiment.document.label,
-                    timestamp: (tweet.timestamp - (tweet.timestamp % coefficient)),
-                    count: 1
+                    t: element.key,
+                    y: element.value,
+                    sentiment: "negative"
                 }
             })
 
-            negative.forEach((tweet, index, array) => {
+            res.send(positiveTweets.concat(negativeTweets));
+        })
+        .catch(next)
+});
 
+/**
+ * Get positive, neutral or negative tweets
+ */ 
+router.get('/:sentiment', function (req, res, next) {
 
-                if (!timestamps.find(function (element) {
-                    return element === tweet.timestamp;
-
-                })) {
-                    timestamps.push(tweet.timestamp);
-                } 
-            })
-
-            negativeFiltered = [];
-
-            timestamps.map((timestamp, index, array) => {
-
-
-                let negativeTweet = negative.filter(tweet => {
-
-                    return tweet.timestamp === timestamp;
+    getTweets(req.params.sentiment)
+        .then(result => {
+            res.send(
+                result.map(element => {
+                    return {
+                        t: element.key,
+                        y: element.value
+                    }
                 })
-
-                if (negativeTweet.length === 1) {
-                    negativeFiltered.push(negativeTweet[0]);
-                } else if (negativeTweet.length > 1) {
-                    negativeTweet[0].count = negativeTweet.length;
-                    negativeFiltered.push(negativeTweet[0]);
-                }
-
-            })
-
-            allTweets = positiveFiltered.concat(negativeFiltered);
-            console.log(allTweets);
-            res.send(allTweets);
-        }
-    });
-
+            )
+        })
+        .catch(next);
 });
 
 module.exports = router;

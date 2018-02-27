@@ -47,10 +47,10 @@ router.get('/', function (req, res, next) {
                 else {
                     // console.log(data);
                     res.send(data);
-                    saveResultToCloudant({ text: req.query.text, analysis: JSON.parse(data), timestamp: new Date().getTime() })
-                        .catch(error => {
-                            console.error(error)
-                        });
+                    // saveResultToCloudant({ text: req.query.text, analysis: JSON.parse(data), timestamp: new Date().getTime() })
+                        // .catch(error => {
+                            // console.error(error)
+                        // });
                 }
             })
 
