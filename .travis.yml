@@ -1,0 +1,26 @@
+group: bluezone
+language: node_jså
+# enable cache to speed up NodeJS builds
+cache:
+  directories:
+    - node_modules
+
+install:
+  - npm install
+
+script:
+  - npm test || true
+
+before_deploy:
+ - wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+ - echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+ - sudo apt-get update
+ - sudo apt-get install cf-cli
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: ./deploy.sh
+    on:
+      branch: master
+      type: push
