@@ -6,9 +6,15 @@ The purpose is to analyze tweets doing sentiment analysis in real time.
 
 ToDo:
 
-Criar uma view que receba as keys e separe tanto tweets negativos quanto positivos na mesma view
+- [ ] Criar uma view que receba as keys e separe tanto tweets negativos quanto positivos na mesma view
 
-Eu provavelmente preciso fazer um emit {"timestamp": doc.timestamp, "sentiment": doc.bla.bla.bla.sentiment} e depois passar uma key pra separar primeiro por sentiment depois por timestamp depois agrupar
+
+- [ ] Eu provavelmente preciso fazer um emit {"timestamp": doc.timestamp, "sentiment": doc.bla.bla.bla.sentiment} e depois passar uma key pra separar primeiro por sentiment depois por timestamp depois agrupar
+
+ - As classes vão cair em neutro, positivo, negativo e não-classificável
+
+ - [ ] Precisa deixar o gráfico em tempo real
+ 
 
 Usage
 ---
