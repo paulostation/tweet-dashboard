@@ -1,5 +1,7 @@
 var io;
 
+let saveToDB = require("./model/cloudant.js").saveToDB;
+
 module.exports = function (app) {
 
     io = require('socket.io')(app);
@@ -29,8 +31,11 @@ module.exports = function (app) {
 
         if (tweet.lang === "pt") {
 
-            // console.log(tweet.text, "\n");
             io.emit('tweet', tweet);
+            // saveToDB(tweet)
+            // .catch(error => {
+            //     console.error(error);
+            // });
 
         }
     })
