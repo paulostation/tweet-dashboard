@@ -24,7 +24,7 @@ var server = http.createServer(app);
 
 //Create websockets server;
 
-require("../tweetStream.js")(server)
+require("../services/twitter.js")(server)
 
 /**
  * Listen on provided port, on all network interfaces.
