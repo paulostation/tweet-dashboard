@@ -1,39 +1,21 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express'),
+    fs = require("fs"),
+    cloudantAPI = require("../model/cloudant.js");
 
-const Cloudant = require("cloudant");
-
-
-var me = 'c82f999a-c500-4ba2-b57a-847a1988c8f6-bluemix.cloudant.com'; // Set this to your own account
-var key = "addeptedurnestryingulded"
-var password = "cbf03fc257940162b5391494817d6033c042773e";
-
-var cloudant = Cloudant({ account: me, key: key, password: password });
-
-
-// Initialize the library with my account.
-// var cloudant = Cloudant("https://"+me+":"+password+"@c82f999a-c500-4ba2-b57a-847a1988c8f6-bluemix.cloudant.com");
-
-var analyzed_tweets = cloudant.db.use('analyzed_tweet')
+let router = express.Router();
 
 function getTweets(type) {
+
     return new Promise((resolve, reject) => {
-        analyzed_tweets.view('tweets-by-timestamp', type,
-            {
-                'group': true
-            }
-            , function (err, body) {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(body.rows);
-                }
-            });
+
+        cloudantAPI.view("tweets-by-timestamp", type, { group: true })
+            .then(resolve)
+            .catch(reject)
     });
 }
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/sentiment', function (req, res, next) {
 
     let positiveTweets;
     let negativeTweets;
@@ -65,9 +47,40 @@ router.get('/', function (req, res, next) {
         .catch(next)
 });
 
+router.get('/getCSV', function (req, res, next) {
+
+    console.log("About to call cloudant api");
+
+    cloudantAPI.getAllDocs()
+        .then(result => {
+
+            let csv = ""
+
+            result.docs.forEach(tweet => {
+                //Remove quotes and line breaks
+                tweet.text = tweet.text.replace(/\"|\'|\n/g, " ");
+                //Remove retweet string
+                tweet.text = tweet.text.replace(/RT\ @[^:]+:/g, "");
+
+                csv += "\"" + tweet.text + "\"" + "\n"
+            });
+
+            console.log(csv);
+
+            fs.writeFile('tmp.csv', csv, (err) => {
+                if (err) throw err;
+                else {
+                    res.download("tmp.csv")
+                }
+            });
+
+        })
+        .catch(next);
+});
+
 /**
  * Get positive, neutral or negative tweets
- */ 
+ */
 router.get('/:sentiment', function (req, res, next) {
 
     getTweets(req.params.sentiment)

@@ -1,13 +1,60 @@
 const Cloudant = require("cloudant");
 
 
-var me = 'c82f999a-c500-4ba2-b57a-847a1988c8f6-bluemix.cloudant.com'; // Set this to your own account
-var key = "addeptedurnestryingulded"
-var password = "cbf03fc257940162b5391494817d6033c042773e";
+var me = process.env.DATABASE_HOST;
+var key = process.env.DATABASE_USER;
+var password = process.env.DATABASE_PASSWORD;
 
 var cloudant = Cloudant({ account: me, key: key, password: password });
 
 let analyzed_tweets = cloudant.use("analyzed_tweet");
+
+
+
+function getAllDocs() {
+    return new Promise((resolve, reject) => {
+        analyzed_tweets.find({
+            "selector": {
+                "timestamp_ms": {
+                    "$gt": 0
+                }
+            }
+        }, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+
+                resolve(data);
+            }
+        })
+    })
+}
+
+function get1DayOldTweets(db) {
+
+    return new Promise((resolve, reject) => {
+        // minus 1 day in millisecondes
+        let coefficient = 1000 * 60 * 60 * 24
+
+        analyzed_tweets.find({
+            "selector": {
+                "timestamp": {
+                    "$gt": new Date().getTime() - coefficient
+                }
+            },
+            "fields": [
+                "_id",
+                "_rev"
+            ]
+        }, (err, data) => {
+            if (err) {
+                reject(error)
+            } else {
+                resolve(data);
+            }
+        })
+    });
+}
 
 function saveToDB(data) {
     return new Promise((resolve, reject) => {
@@ -22,29 +69,39 @@ function saveToDB(data) {
     })
 }
 
-function getAllDocs() {
+function bulk(tweetsToDelete) {
+
     return new Promise((resolve, reject) => {
-        analyzed_tweets.find({
-            "selector": {
-               "timestamp_ms": {
-                  "$gt": 0
-               }
-            }
-         }, (err, data) => {
-            if(err) {
-                reject(err);
+
+        analyzed_tweets.bulk({ docs: tweetsToDelete }, function (er) {
+            if (er) {
+                reject(er.message);
             } else {
-                
-                resolve(data);
+                resolve("Finished operation");
             }
-    
         })
-        
-       
-    })
+    });
+}
+
+function view(viewName, param, options) {
+    return new Promise((resolve, reject) => {
+
+        analyzed_tweets.view(viewName, param,
+            options, (err, body) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(body.rows);
+                }
+            });
+
+    });
 }
 
 module.exports = {
     saveToDB: saveToDB,
-    getAllDocs: getAllDocs
+    getAllDocs: getAllDocs,
+    get1DayOldTweets: get1DayOldTweets,
+    bulk: bulk,
+    view: view
 }
