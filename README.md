@@ -1,27 +1,21 @@
 # Real time tweet analysis !
 
-This repository holds the code for [this](https://tweet-dashboard.mybluemix.net/) webapp.
+This application is available on [https://tweet-dashboard.mybluemix.net](https://tweet-dashboard.mybluemix.net/)
 
 The purpose is to analyze tweets doing sentiment analysis in real time.
 
 ToDo:
 
-- [ ] Criar uma view que receba as keys e separe tanto tweets negativos quanto positivos na mesma view
-
-
-- [ ] Eu provavelmente preciso fazer um emit {"timestamp": doc.timestamp, "sentiment": doc.bla.bla.bla.sentiment} e depois passar uma key pra separar primeiro por sentiment depois por timestamp depois agrupar
-
- - As classes vão cair em neutro, positivo, negativo e não-classificável
-
- - [ ] Precisa deixar o gráfico em tempo real
- - [ ] Criar uma model pros tweets
- - [ ] Criar view no website por presidenciável
- - [ ] Diferenciar os tweets por presidenciável
- - [ ] Limpar os tweets antigos pra não ter memory leak no site
+ - [X] Create a view to retrieve number of tweets by hour.
+ - [ ] Make chart update automatically.
+ - [ ] Create a model for tweets.
+ - [ ] Create tabs on website by candidate.
+ - [ ] Create some way of classifying tweets by candidate.
+ - [ ] Clean old tweets from front-end in order to prevent memory leak.
+ - [ ] Put the view code on github
 
 Usage
 ---
 
-```
-DEBUG=app:* npm start
-```
+1. `npm install`
+2. `DEBUG=app:* npm start`
