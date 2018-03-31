@@ -11,9 +11,6 @@ const schedule = require("node-schedule");
 var index = require('./routes/index');
 var users = require('./routes/users');
 var tweets = require('./routes/tweets');
-var classifier = require('./routes/classify');
-
-
 
 var app = express();
 
@@ -32,7 +29,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 app.use('/tweets', tweets);
-app.use('/classify', classifier);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -51,6 +47,7 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 var j = schedule.scheduleJob('*/30 * * * *', function () {
   const {
@@ -82,6 +79,6 @@ var j = schedule.scheduleJob('*/30 * * * *', function () {
 
     console.log(`child process exited with code ${code}`);
   });
-});
+}); 
 
 module.exports = app;
