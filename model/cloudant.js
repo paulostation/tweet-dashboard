@@ -16,15 +16,35 @@ function saveToDB(data) {
             if (err) {
                 reject(err.message);
             } else {
-
-                console.log('You have inserted the data.');
-                console.log(data);
                 resolve(true);
             }
         });
     })
 }
 
+function getAllDocs() {
+    return new Promise((resolve, reject) => {
+        analyzed_tweets.find({
+            "selector": {
+               "timestamp_ms": {
+                  "$gt": 0
+               }
+            }
+         }, (err, data) => {
+            if(err) {
+                reject(err);
+            } else {
+                
+                resolve(data);
+            }
+    
+        })
+        
+       
+    })
+}
+
 module.exports = {
-    saveToDB: saveToDB
+    saveToDB: saveToDB,
+    getAllDocs: getAllDocs
 }
