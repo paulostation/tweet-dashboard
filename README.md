@@ -14,7 +14,10 @@ ToDo:
  - As classes vão cair em neutro, positivo, negativo e não-classificável
 
  - [ ] Precisa deixar o gráfico em tempo real
- 
+ - [ ] Criar uma model pros tweets
+ - [ ] Criar view no website por presidenciável
+ - [ ] Diferenciar os tweets por presidenciável
+ - [ ] Limpar os tweets antigos pra não ter memory leak no site
 
 Usage
 ---
