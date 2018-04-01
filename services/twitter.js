@@ -22,30 +22,34 @@ module.exports = function (app) {
     };
 
     var Twitter = new TwitterStream(keys, false);
+
     Twitter.stream('statuses/filter', {
-        track: 'lula,bolsonaro,cirogomes,alckmin,marinasilva,eleicoes2018'
+        track: 'lula,bolsonaro,ciro,gomes,alckmin,marina,silva,eleicoes'
+        
     });
 
     Twitter.on("data", function (data) {
-
+        //data comes as buffer, parse to UTF8
         let tweet = JSON.parse(data.toString('utf8'));
-
+        //filter only portuguese tweets
         if (tweet.lang === "pt") {
 
-            classificationController.classifyTweet(tweet.text)
-                .then(result => {
-                    
-                    io.emit('tweet', {
-                        text: tweet.text,
-                        analysis: result
-                    });
-                    tweet.analysis = result;
+            //skip retweets
+            if (tweet.text.lastIndexOf("RT @") !== 0) {
 
-                    saveToDB(tweet);
+                classificationController.classifyTweet(tweet.text)
+                    .then(result => {
 
-                    console.log("Got a " + result + " tweet!");
-                })
-                .catch(console.error);
+                        io.emit('tweet', {
+                            text: tweet.text,
+                            analysis: result
+                        });
+                        tweet.analysis = result;
+
+                        return saveToDB(tweet);
+                    })
+                    .catch(console.error);
+            }
         }
     })
 };
