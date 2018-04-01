@@ -1,5 +1,5 @@
 group: bluezone
-language: node_jså
+language: node_js
 # enable cache to speed up NodeJS builds
 cache:
   directories:
