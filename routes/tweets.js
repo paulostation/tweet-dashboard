@@ -10,7 +10,7 @@ function getTweets(type) {
 
         cloudantAPI.view("tweets-by-timestamp", type, { group: true })
             .then(resolve)
-            .catch(reject)
+            .catch(reject) 
     });
 }
 
@@ -22,7 +22,9 @@ router.get('/sentiment', function (req, res, next) {
 
     getTweets("positive")
         .then(result => {
+
             positiveTweets = result.map(element => {
+
                 return {
                     t: element.key,
                     y: element.value,
@@ -34,7 +36,9 @@ router.get('/sentiment', function (req, res, next) {
 
     getTweets("negative")
         .then(result => {
+
             negativeTweets = result.map(element => {
+
                 return {
                     t: element.key,
                     y: element.value,
@@ -51,7 +55,7 @@ router.get('/getCSV', function (req, res, next) {
 
     console.log("About to call cloudant api");
 
-    cloudantAPI.getAllDocs()
+    cloudantAPI.getAllDocs(1000)
         .then(result => {
 
             let csv = ""
@@ -64,8 +68,6 @@ router.get('/getCSV', function (req, res, next) {
 
                 csv += "\"" + tweet.text + "\"" + "\n"
             });
-
-            console.log(csv);
 
             fs.writeFile('tmp.csv', csv, (err) => {
                 if (err) throw err;
@@ -85,6 +87,7 @@ router.get('/:sentiment', function (req, res, next) {
 
     getTweets(req.params.sentiment)
         .then(result => {
+            
             res.send(
                 result.map(element => {
                     return {
