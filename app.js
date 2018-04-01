@@ -48,37 +48,35 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
+var j = schedule.scheduleJob('1 * * * *', function () {
 
-var j = schedule.scheduleJob('*/30 * * * *', function () {
-  const {
-    spawn
-} = require('child_process');
+  console.log("Calling child process...");
+
+  const { spawn } = require('child_process');
 
   const deleteOldTweets = spawn('node', [path.join(__dirname, "./clearDB.js")], {});
 
-  let stdout = "",
-    stderr = "";
+  let stderr = "";
 
-  deleteOldTweets.stdout.on('data', (data) => {
+  deleteOldTweets.stdout.on('data', data => {
 
-    stdout += data;
-    
+    console.log(data.toString());
+
   });
 
-  deleteOldTweets.stderr.on('data', (data) => {
+  deleteOldTweets.stderr.on('data', data => {
+
     stderr += data;
-    
+
   });
 
-  deleteOldTweets.on('close', (code) => {
-    if (code !== 0) {
-      console.log(stderr)
-    } else {
-      console.log(stdout)
-    }
+  deleteOldTweets.on('close', code => {
+
+    if (code !== 0)
+      console.log(stderr);
 
     console.log(`child process exited with code ${code}`);
   });
-}); 
+});
 
 module.exports = app;
