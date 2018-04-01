@@ -1,21 +1,36 @@
 const cloudant = require("./model/cloudant");
 
+function delete1DayOldTweets(remaning) {
 
+    console.log("deleting old tweets");
 
-cloudant.get1DayOldTweets()
-    .then(data => {
+    cloudant.get1DayOldTweets()
+        .then(data => {
 
-        console.log("Number of tweets to delete: " + data.docs.length);
+            remaning = data.docs.length;
 
-        tweetsToDelete = data.docs.map(tweet => {
-            tweet._deleted = true;
+            console.log("Number of tweets to delete: " + data.docs.length);
 
-            return tweet;
-        });
+            tweetsToDelete = data.docs.map(tweet => {
 
-        cloudant.bulk(tweetsToDelete)
-            .then(console.log);
+                tweet._deleted = true;
 
-    }).catch(error => {
-        console.error(error);
-    })
+                return tweet;
+            });
+
+            return cloudant.bulk(tweetsToDelete);
+
+        })
+        .then(bulkResult => {
+
+            console.log(bulkResult);
+            
+            if (remaning > 0)
+                delete1DayOldTweets(remaning);
+        })
+        .catch(error => {
+            console.error(error);
+        })
+}
+
+delete1DayOldTweets();
