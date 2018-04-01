@@ -13,6 +13,7 @@ ToDo:
  - [ ] Create some way of classifying tweets by candidate.
  - [ ] Clean old tweets from front-end in order to prevent memory leak.
  - [ ] Put the view code on github
+ - [ ] Create CSV script to run as child_process
 
 Usage
 ---
