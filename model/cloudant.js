@@ -1,6 +1,5 @@
 const Cloudant = require("cloudant");
 
-
 var me = process.env.DATABASE_HOST;
 var key = process.env.DATABASE_USER;
 var password = process.env.DATABASE_PASSWORD;
@@ -9,43 +8,43 @@ var cloudant = Cloudant({ account: me, key: key, password: password });
 
 let analyzed_tweets = cloudant.use("analyzed_tweet");
 
+function getAllDocs(limit) {
 
-
-function getAllDocs() {
     return new Promise((resolve, reject) => {
+
         analyzed_tweets.find({
             "selector": {
                 "timestamp_ms": {
                     "$gt": 0
                 }
-            }
+            }, limit:  limit || -1 
         }, (err, data) => {
             if (err) {
                 reject(err);
             } else {
-
                 resolve(data);
             }
         })
     })
 }
 
-function get1DayOldTweets(db) {
+function get1DayOldTweets() {
 
     return new Promise((resolve, reject) => {
-        // minus 1 day in millisecondes
+        // minus 1 day in milliseconds
         let coefficient = 1000 * 60 * 60 * 24
 
         analyzed_tweets.find({
             "selector": {
-                "timestamp": {
+                "timestamp_ms": {
                     "$gt": new Date().getTime() - coefficient
                 }
             },
             "fields": [
                 "_id",
                 "_rev"
-            ]
+            ],
+            limit: 50000
         }, (err, data) => {
             if (err) {
                 reject(error)
@@ -84,6 +83,7 @@ function bulk(tweetsToDelete) {
 }
 
 function view(viewName, param, options) {
+
     return new Promise((resolve, reject) => {
 
         analyzed_tweets.view(viewName, param,
@@ -94,7 +94,6 @@ function view(viewName, param, options) {
                     resolve(body.rows);
                 }
             });
-
     });
 }
 
