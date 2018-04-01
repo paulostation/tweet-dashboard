@@ -17,7 +17,7 @@ function getAllDocs(limit) {
                 "timestamp_ms": {
                     "$gt": 0
                 }
-            }, limit:  limit || -1 
+            }, limit:  limit || -1
         }, (err, data) => {
             if (err) {
                 reject(err);
@@ -35,19 +35,19 @@ function get1DayOldTweets() {
         let coefficient = 1000 * 60 * 60 * 24
 
         analyzed_tweets.find({
-            "selector": {
-                "timestamp_ms": {
-                    "$gt": new Date().getTime() - coefficient
+            selector: {
+                timestamp_ms: {
+                    "$lt": new Date().getTime() - coefficient
                 }
             },
-            "fields": [
+            fields: [
                 "_id",
                 "_rev"
             ],
             limit: 50000
         }, (err, data) => {
             if (err) {
-                reject(error)
+                reject(err);
             } else {
                 resolve(data);
             }
