@@ -24,7 +24,7 @@ module.exports = function (app) {
     var Twitter = new TwitterStream(keys, false);
 
     Twitter.stream('statuses/filter', {
-        track: 'lula,bolsonaro,ciro,gomes,alckmin,marina,silva,eleicoes'
+        track: 'lula,bolsonaro,ciro,gomes,alckmin,marina,eleicoes'
         
     });
 
