@@ -8,6 +8,8 @@ var cloudant = Cloudant({ account: me, key: key, password: password });
 
 let analyzed_tweets = cloudant.use("analyzed_tweet");
 
+let feedback_db = cloudant.use("tweet_feedback");
+
 function getAllDocs(limit) {
 
     return new Promise((resolve, reject) => {
@@ -68,6 +70,19 @@ function saveToDB(data) {
     })
 }
 
+function saveToFeedbackDB(data) {
+    return new Promise((resolve, reject) => {
+
+        feedback_db.insert(data, function (err, body, header) {
+            if (err) {
+                reject(err.message);
+            } else {
+                resolve(body);
+            }
+        });
+    })
+}
+
 function bulk(tweetsToDelete) {
 
     return new Promise((resolve, reject) => {
@@ -99,6 +114,7 @@ function view(viewName, param, options) {
 
 module.exports = {
     saveToDB: saveToDB,
+    saveToFeedbackDB: saveToFeedbackDB,
     getAllDocs: getAllDocs,
     get1DayOldTweets: get1DayOldTweets,
     bulk: bulk,

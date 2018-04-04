@@ -46,7 +46,7 @@ module.exports = function (app) {
                         });
                         tweet.analysis = result;
 
-                        return saveToDB(tweet);
+                        // return saveToDB(tweet);
                     })
                     .catch(console.error);
             }

@@ -10,7 +10,7 @@ function getTweets(type) {
 
         cloudantAPI.view("tweets-by-timestamp", type, { group: true })
             .then(resolve)
-            .catch(reject) 
+            .catch(reject)
     });
 }
 
@@ -80,6 +80,15 @@ router.get('/getCSV', function (req, res, next) {
         .catch(next);
 });
 
+router.post('/feedback', (req, res, next) => {
+    console.log(req.body)
+    cloudantAPI.saveToFeedbackDB(req.body)
+        .then(result => {
+            res.send("OK");
+        })
+        .catch(next);
+});
+
 /**
  * Get positive, neutral or negative tweets
  */
@@ -87,7 +96,7 @@ router.get('/:sentiment', function (req, res, next) {
 
     getTweets(req.params.sentiment)
         .then(result => {
-            
+
             res.send(
                 result.map(element => {
                     return {
