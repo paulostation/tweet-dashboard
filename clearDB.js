@@ -25,7 +25,7 @@ function delete1DayOldTweets(remaning) {
 
             console.log(bulkResult);
             
-            if (remaning > 0)
+            if (remaning < 100)
                 delete1DayOldTweets(remaning);
         })
         .catch(error => {

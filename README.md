@@ -14,6 +14,7 @@ ToDo:
  - [ ] Clean old tweets from front-end in order to prevent memory leak.
  - [ ] Put the view code on github
  - [ ] Create CSV script to run as child_process
+ - [ ] Filter URLs and twitter usernames, as they tend to impair duplicate filter
 
 Usage
 ---

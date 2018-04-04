@@ -15,11 +15,11 @@ function getAllDocs(limit) {
     return new Promise((resolve, reject) => {
 
         analyzed_tweets.find({
-            "selector": {
-                "timestamp_ms": {
+            selector: {
+                timestamp_ms: {
                     "$gt": 0
                 }
-            }, limit:  limit || -1
+            }, limit: limit || -1
         }, (err, data) => {
             if (err) {
                 reject(err);
@@ -38,9 +38,20 @@ function get1DayOldTweets() {
 
         analyzed_tweets.find({
             selector: {
-                timestamp_ms: {
-                    "$lt": new Date().getTime() - coefficient
-                }
+                "$or": [
+                    {
+                        timestamp_ms: {
+                            //compare with string
+                            "$lt": (new Date().getTime() - coefficient) + ""
+                        }
+                    },
+                    {
+                        timestamp_ms: {
+                            //compare with long
+                            "$lt": new Date().getTime() - coefficient
+                        }
+                    }
+                ]
             },
             fields: [
                 "_id",
