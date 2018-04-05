@@ -33,11 +33,6 @@ function getTweets(sentiment) {
     });
 }
 
-// function giveFeedback(tweet) {
-//     alert(tweet)
-//     alert("something")
-// }
-
 function renderChart(positiveTweets, negativeTweets) {
 
     var graphicContext = document.getElementById("myChart").getContext('2d');
@@ -62,14 +57,14 @@ function renderChart(positiveTweets, negativeTweets) {
         options: {
             scales: {
                 yAxes: [{
-                    // stacked: true,
+                    stacked: true,
                     ticks: {
                         source: "labels"
                     }
                 }],
                 xAxes: [{
                     type: 'time',
-                    // stacked: true,
+                    stacked: true,
                     distribution: "linear",
                     time: {
                         // string/callback - By default, date objects are expected. You may use a pattern string from http://momentjs.com/docs/#/parsing/string-format/ to parse a time string format, or use a callback function that is passed the label, and must return a moment() instance.
@@ -114,20 +109,48 @@ $(document).ready(() => {
 
         })
         .catch(console.error)
-    
-        
+
+        $('#tweets').on('click', 'button', function (event) {
+            
+            let tweetText = $(event.target).data('tweet');
+            let sentiment = $(event.target).attr("class");
+            
+            $.ajax({
+                url: "/tweets/feedback",
+                method: "POST",
+                data: {
+                    text: tweetText,
+                    sentiment: sentiment
+                },
+                json: true,
+                error: console.error,
+                success: console.log
+            });
+          })
 });
 
 socket.on('tweet', tweet => {
 
     if (tweet.analysis === 'positive') {
-        $("#tweets").prepend('<div style="background-color:lightgreen">' + tweet.text +'</div>');
+        $("#tweets").prepend('<div style="background-color:lightgreen">' + tweet.text +
+        '<button data-tweet="'+ tweet.text+'" class="positive" >positivo</button>' +
+        '<button data-tweet="'+ tweet.text+'" class="negative" >negativo</button>' +
+        '<button data-tweet="'+ tweet.text+'" class="neutral" >neutro</button>' +
+         "</div>");
     }
     else if (tweet.analysis === 'negative') {
-        $("#tweets").prepend('<div style="background-color:#ff5050">' + tweet.text + '</div>');
+        $("#tweets").prepend('<div style="background-color:#ff5050">' + tweet.text +
+        '<button data-tweet="'+ tweet.text+'" class="positive" >positivo</button>' +
+        '<button data-tweet="'+ tweet.text+'" class="negative" >negativo</button>' +
+        '<button data-tweet="'+ tweet.text+'" class="neutral" >neutro</button>' +
+         "</div>");
     }
     else {
-        $("#tweets").prepend('<div style="background-color:lightgray">' + tweet.text + '</div>');
+        $("#tweets").prepend('<div style="background-color:lightgray">' + tweet.text +
+        '<button data-tweet="'+ tweet.text+'" class="positive" >positivo</button>' +
+        '<button data-tweet="'+ tweet.text+'" class="negative" >negativo</button>' +
+        '<button data-tweet="'+ tweet.text+'" class="neutral" >neutro</button>' +
+         "</div>") ;
     }
 
     $("#tweets").prepend('<br>');
