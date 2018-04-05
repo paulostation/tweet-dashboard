@@ -23,8 +23,42 @@ module.exports = function (app) {
 
     var Twitter = new TwitterStream(keys, false);
 
+    Twitter.on('connection success', function (uri) {
+        console.log('connection success', uri);
+    });
+
+    Twitter.on('connection aborted', function () {
+        console.log('connection aborted');
+    });
+
+    Twitter.on('connection error network', function (error) {
+        console.log('connection error network', error);
+    });
+
+    Twitter.on('connection error stall', function () {
+        console.log('connection error stall');
+    });
+
+    Twitter.on('connection error http', function (httpStatusCode) {
+        console.log('connection error http', httpStatusCode);
+    });
+
+    Twitter.on('connection rate limit', function (httpStatusCode) {
+        console.log('connection rate limit', httpStatusCode);
+    });
+
+    Twitter.on('data error', function (error) {
+        console.log('data error', error);
+    });
+
+    Twitter.on('data keep-alive', function () {
+        console.log('data keep-alive');
+    });
+
+
     Twitter.stream('statuses/filter', {
-        track: 'lula,bolsonaro,ciro,gomes,alckmin,eleições'
+        track: 'lula,bolsonaro,ciro,gomes,alckmin,eleições',
+        stall_warnings: true
         
     });
 
@@ -39,7 +73,7 @@ module.exports = function (app) {
 
                 classificationController.classifyTweet(tweet.text)
                     .then(result => {
-
+                        
                         io.emit('tweet', {
                             text: tweet.text,
                             analysis: result
