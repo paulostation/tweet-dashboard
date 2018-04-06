@@ -124,7 +124,9 @@ $(document).ready(() => {
                 },
                 json: true,
                 error: console.error,
-                success: console.log
+                success: () => {
+                    $(event.target).parent().hide()
+                }
             });
           })
 });
@@ -132,17 +134,19 @@ $(document).ready(() => {
 socket.on('tweet', tweet => {
 
     if (tweet.analysis === 'positive') {
-        $("#tweets").prepend('<div style="background-color:lightgreen">' + tweet.text +
+        $("#tweets").prepend('<div style="background-color:#68ff68">' + tweet.text +
         '<button data-tweet="'+ tweet.text+'" class="positive" >positivo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="negative" >negativo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="neutral" >neutro</button>' +
+        '<button data-tweet="'+ tweet.text+'" class="mixed" >misto</button>' +
          "</div>");
     }
     else if (tweet.analysis === 'negative') {
-        $("#tweets").prepend('<div style="background-color:#ff5050">' + tweet.text +
+        $("#tweets").prepend('<div style="background-color:#ff6868">' + tweet.text +
         '<button data-tweet="'+ tweet.text+'" class="positive" >positivo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="negative" >negativo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="neutral" >neutro</button>' +
+        '<button data-tweet="'+ tweet.text+'" class="mixed" >misto</button>' +
          "</div>");
     }
     else {
@@ -150,6 +154,7 @@ socket.on('tweet', tweet => {
         '<button data-tweet="'+ tweet.text+'" class="positive" >positivo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="negative" >negativo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="neutral" >neutro</button>' +
+        '<button data-tweet="'+ tweet.text+'" class="mixed" >misto</button>' +
          "</div>") ;
     }
 
