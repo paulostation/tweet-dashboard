@@ -6,22 +6,30 @@ var password = process.env.DATABASE_PASSWORD;
 
 var cloudant = Cloudant({ account: me, key: key, password: password });
 
-let analyzed_tweets = cloudant.use("analyzed_tweet");
+const databaseNames = {
+    tweetDB: "analyzed_tweet",
+    feedbackDB: "tweet_feedback"
+}
 
-let feedback_db = cloudant.use("tweet_feedback");
+let databases = {};
 
-function getAllDocs(limit) {
+databases[databaseNames.tweetDB] = cloudant.use(databaseNames.tweetDB);
+databases[databaseNames.feedbackDB] = cloudant.use(databaseNames.feedbackDB);
+
+function getAllDocs(dbName, limit) {
 
     return new Promise((resolve, reject) => {
 
-        analyzed_tweets.find({
+
+        databases[dbName].find({
             selector: {
-                timestamp_ms: {
+                _id: {
                     "$gt": 0
                 }
-            }, limit: limit || -1
+            }, limit: limit
         }, (err, data) => {
             if (err) {
+                console.log(err)
                 reject(err);
             } else {
                 resolve(data);
@@ -30,13 +38,21 @@ function getAllDocs(limit) {
     })
 }
 
+function getAllTweets(limit) {
+    return getAllDocs(databaseNames.tweetDB, limit);
+}
+
+function getAllFeedbacks(limit) {
+    return getAllDocs(databaseNames.feedbackDB, limit);
+}
+
 function get1DayOldTweets() {
 
     return new Promise((resolve, reject) => {
         // minus 1 day in milliseconds
         let coefficient = 1000 * 60 * 60 * 24
 
-        analyzed_tweets.find({
+        databases[databaseNames.tweetDB].find({
             selector: {
                 "$or": [
                     {
@@ -71,7 +87,7 @@ function get1DayOldTweets() {
 function saveToDB(data) {
     return new Promise((resolve, reject) => {
 
-        analyzed_tweets.insert(data, function (err, body, header) {
+        databases[databaseNames.tweetDB].insert(data, function (err, body, header) {
             if (err) {
                 reject(err.message);
             } else {
@@ -84,7 +100,7 @@ function saveToDB(data) {
 function saveToFeedbackDB(data) {
     return new Promise((resolve, reject) => {
 
-        feedback_db.insert(data, function (err, body, header) {
+        databases[databaseNames.feedbackDB].insert(data, function (err, body, header) {
             if (err) {
                 reject(err.message);
             } else {
@@ -98,7 +114,7 @@ function bulk(tweetsToDelete) {
 
     return new Promise((resolve, reject) => {
 
-        analyzed_tweets.bulk({ docs: tweetsToDelete }, function (er) {
+        databases[databaseNames.tweetDB].bulk({ docs: tweetsToDelete }, function (er) {
             if (er) {
                 reject(er.message);
             } else {
@@ -112,7 +128,7 @@ function view(viewName, param, options) {
 
     return new Promise((resolve, reject) => {
 
-        analyzed_tweets.view(viewName, param,
+        databases[databaseNames.tweetDB].view(viewName, param,
             options, (err, body) => {
                 if (err) {
                     reject(err)
@@ -126,7 +142,8 @@ function view(viewName, param, options) {
 module.exports = {
     saveToDB: saveToDB,
     saveToFeedbackDB: saveToFeedbackDB,
-    getAllDocs: getAllDocs,
+    getAllFeedbacks: getAllFeedbacks,
+    getAllTweets: getAllTweets,
     get1DayOldTweets: get1DayOldTweets,
     bulk: bulk,
     view: view
