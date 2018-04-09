@@ -57,7 +57,7 @@ module.exports = function (app) {
 
 
     Twitter.stream('statuses/filter', {
-        track: 'lula,bolsonaro,ciro,gomes,alckmin,eleições',
+        track: process.env.TWEET_TRACKING,
         stall_warnings: true
         
     });
