@@ -117,7 +117,7 @@ $(document).ready(() => {
             
             $.ajax({
                 url: "/tweets/feedback",
-                method: "POST",
+                method: "PUT",
                 data: {
                     text: tweetText,
                     sentiment: sentiment
@@ -133,8 +133,11 @@ $(document).ready(() => {
 
 socket.on('tweet', tweet => {
 
+    //Remove tweet handles
+    tweet.text = tweet.text.replace(/https:\/\/[^\s]+/g, "");
+    
     if (tweet.analysis === 'positive') {
-        $("#tweets").prepend('<div style="background-color:#68ff68">' + tweet.text +
+        $("#tweets").prepend('<div >' + tweet.text + "<br>" +
         '<button data-tweet="'+ tweet.text+'" class="positive" >positivo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="negative" >negativo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="neutral" >neutro</button>' +
@@ -142,7 +145,7 @@ socket.on('tweet', tweet => {
          "</div>");
     }
     else if (tweet.analysis === 'negative') {
-        $("#tweets").prepend('<div style="background-color:#ff6868">' + tweet.text +
+        $("#tweets").prepend('<div >' + tweet.text + "<br>" +
         '<button data-tweet="'+ tweet.text+'" class="positive" >positivo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="negative" >negativo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="neutral" >neutro</button>' +
@@ -150,7 +153,7 @@ socket.on('tweet', tweet => {
          "</div>");
     }
     else {
-        $("#tweets").prepend('<div style="background-color:lightgray">' + tweet.text +
+        $("#tweets").prepend('<div >' + tweet.text + "<br>" +
         '<button data-tweet="'+ tweet.text+'" class="positive" >positivo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="negative" >negativo</button>' +
         '<button data-tweet="'+ tweet.text+'" class="neutral" >neutro</button>' +
