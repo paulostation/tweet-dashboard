@@ -51,40 +51,54 @@ router.get('/sentiment', function (req, res, next) {
         .catch(next)
 });
 
-router.get('/getCSV', function (req, res, next) {
+router.put('/feedback', (req, res, next) => {
 
-    console.log("About to call cloudant api");
-
-    cloudantAPI.getAllDocs(1000)
+    cloudantAPI.saveToFeedbackDB(req.body)
         .then(result => {
-
-            let csv = ""
-
-            result.docs.forEach(tweet => {
-                //Remove quotes and line breaks
-                tweet.text = tweet.text.replace(/\"|\'|\n/g, " ");
-                //Remove retweet string
-                tweet.text = tweet.text.replace(/RT\ @[^:]+:/g, "");
-
-                csv += "\"" + tweet.text + "\"" + "\n"
-            });
-
-            fs.writeFile('tmp.csv', csv, (err) => {
-                if (err) throw err;
-                else {
-                    res.download("tmp.csv")
-                }
-            });
-
+            res.send("OK");
         })
         .catch(next);
 });
 
-router.post('/feedback', (req, res, next) => {
-    console.log(req.body)
-    cloudantAPI.saveToFeedbackDB(req.body)
+router.get('/feedback/getCSV', (req, res, next) => {
+
+    cloudantAPI.getAllFeedbacks()
         .then(result => {
-            res.send("OK");
+
+            // delete temporary file
+            fs.unlink('/tmp/feedback.csv', err => {
+
+                result.docs.forEach((tweet, index, array) => {
+                    if (!tweet.text)
+                        return;
+                    //Remove quotes and line breaks
+                    tweet.text = tweet.text.replace(/\"|\'|\n/g, " ");
+                    //Remove retweet string
+                    tweet.text = tweet.text.replace(/RT\ @[^:]+:/g, "");
+                    //Remove tweet handles
+                    tweet.text = tweet.text.replace(/@[^\s]+/g, "");
+                    
+                    let string = `\"${tweet.text}\",\"${tweet.sentiment}\"\n`
+                    // add a line to a lyric file, using appendFile
+                    fs.appendFile('/tmp/feedback.csv', string, (err) => {
+                        if (err) throw err;
+                    });
+
+                    if (index === array.length - 1) {
+                        //wait 1 sec before sending csv file
+                        setTimeout(() => {
+                            //send CSV to user
+                            res.download('/tmp/feedback.csv', 'feedback.csv', function (err) {
+                                if (err) {
+                                    console.error(err)
+                                } else {
+                                    console.log("finished donwloading file")
+                                }
+                            });
+                        }, 1000)
+                    }
+                });
+            });
         })
         .catch(next);
 });
