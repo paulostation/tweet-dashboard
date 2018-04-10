@@ -4,7 +4,7 @@ function delete1DayOldTweets(remaning) {
 
     console.log("deleting old tweets");
 
-    cloudant.get1DayOldTweets()
+    cloudant.get1DayOldTweets(10000)
         .then(data => {
 
             remaning = data.docs.length;
@@ -25,7 +25,7 @@ function delete1DayOldTweets(remaning) {
 
             console.log(bulkResult);
             
-            if (remaning < 100)
+            if (remaning > 100)
                 delete1DayOldTweets(remaning);
         })
         .catch(error => {
