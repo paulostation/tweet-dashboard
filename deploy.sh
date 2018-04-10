@@ -6,8 +6,11 @@ if [ "$TRAVIS_BRANCH" == "test" ]
 
         cf push tweet-dashboard-test
 
-elif [ "$TRAVIS_BRANCH" == "prod" ] 
+elif [ "$TRAVIS_BRANCH" == "master" ] 
     then
 
         cf push tweet-dashboard
+else 
+    echo "Invalid branch"
+    exit 1
 fi
