@@ -59,7 +59,7 @@ module.exports = function (app) {
     Twitter.stream('statuses/filter', {
         track: process.env.TWEET_TRACKING,
         stall_warnings: true
-        
+
     });
 
     Twitter.on("data", function (data) {
@@ -73,14 +73,14 @@ module.exports = function (app) {
 
                 classificationController.classifyTweet(tweet.text)
                     .then(result => {
-                        
+
                         io.emit('tweet', {
                             text: tweet.text,
                             analysis: result
                         });
                         tweet.analysis = result;
-
-                        return saveToDB(tweet);
+                        if (process.env.ENVIRONMENT === "prod")
+                            return saveToDB(tweet);
                     })
                     .catch(console.error);
             }

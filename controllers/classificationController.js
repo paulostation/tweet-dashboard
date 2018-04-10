@@ -6,7 +6,7 @@ function classifyTweet(tweet) {
     return new Promise((resolve, reject) => {
 
         let options = {
-            url: "https://tweet-analyzer.mybluemix.net/classify",
+            url: process.env.CLASSIFIER_URL,
             qs: {
                 text: tweet
             }

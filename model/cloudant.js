@@ -46,7 +46,7 @@ function getAllFeedbacks(limit) {
     return getAllDocs(databaseNames.feedbackDB, limit);
 }
 
-function get1DayOldTweets() {
+function get1DayOldTweets(limit) {
 
     return new Promise((resolve, reject) => {
         // minus 1 day in milliseconds
@@ -73,7 +73,7 @@ function get1DayOldTweets() {
                 "_id",
                 "_rev"
             ],
-            limit: 50000
+            limit: limit || 50000
         }, (err, data) => {
             if (err) {
                 reject(err);
