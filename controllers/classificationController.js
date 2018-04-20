@@ -1,5 +1,7 @@
+/* jshint esversion:6 */
 const request = require("request"),
-    saveResultToCloudant = require("../model/cloudant").saveToDB;
+    saveResultToCloudant = require("../model/cloudant").saveToDB,
+    winston = require('../util/logger.js');
 
 function classifyTweet(tweet) {
 
@@ -14,23 +16,18 @@ function classifyTweet(tweet) {
 
         request.get(options,
             (err, responseCode, data) => {
+                
                 if (err) {
                     reject(err);
                 }
                 else {
-
-                    saveResultToCloudant({ text: tweet, analysis: data, timestamp_ms: new Date().getTime() })
-                        .then(() => {
-                            resolve(data);
-                        })
-                        .catch(error => {
-                            reject(error);
-                        });
+                    winston.debug(`Classified tweet: ${tweet}, class: ${data}`);
+                    resolve(data);
                 }
-            })
-    })
+            });
+    });
 }
 
 module.exports = {
     classifyTweet: classifyTweet
-}
+};

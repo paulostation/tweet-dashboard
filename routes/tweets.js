@@ -1,5 +1,7 @@
+/* jshint esversion:6 */
 const express = require('express'),
     fs = require("fs"),
+    winston = require("../util/logger.js"),
     cloudantAPI = require("../model/cloudant.js");
 
 let router = express.Router();
@@ -10,7 +12,7 @@ function getTweets(type) {
 
         cloudantAPI.view("tweets-by-timestamp", type, { group: true })
             .then(resolve)
-            .catch(reject)
+            .catch(reject);
     });
 }
 
@@ -29,8 +31,8 @@ router.get('/sentiment', function (req, res, next) {
                     t: element.key,
                     y: element.value,
                     sentiment: "positive"
-                }
-            })
+                };
+            });
         })
         .catch(next);
 
@@ -43,12 +45,12 @@ router.get('/sentiment', function (req, res, next) {
                     t: element.key,
                     y: element.value,
                     sentiment: "negative"
-                }
-            })
+                };
+            });
 
             res.send(positiveTweets.concat(negativeTweets));
         })
-        .catch(next)
+        .catch(next);
 });
 
 router.put('/feedback', (req, res, next) => {
@@ -78,7 +80,7 @@ router.get('/feedback/getCSV', (req, res, next) => {
                     //Remove tweet handles
                     tweet.text = tweet.text.replace(/@[^\s]+/g, "");
                     
-                    let string = `\"${tweet.text}\",\"${tweet.sentiment}\"\n`
+                    let string = `\"${tweet.text}\",\"${tweet.sentiment}\"\n`;
                     // add a line to a lyric file, using appendFile
                     fs.appendFile('/tmp/feedback.csv', string, (err) => {
                         if (err) throw err;
@@ -90,12 +92,12 @@ router.get('/feedback/getCSV', (req, res, next) => {
                             //send CSV to user
                             res.download('/tmp/feedback.csv', 'feedback.csv', function (err) {
                                 if (err) {
-                                    console.error(err)
+                                    winston.error(err);
                                 } else {
-                                    console.log("finished donwloading file")
+                                    winston.debug("finished downloading file");
                                 }
                             });
-                        }, 1000)
+                        }, 1000);
                     }
                 });
             });
@@ -116,9 +118,9 @@ router.get('/:sentiment', function (req, res, next) {
                     return {
                         t: element.key,
                         y: element.value
-                    }
+                    };
                 })
-            )
+            );
         })
         .catch(next);
 });

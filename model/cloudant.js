@@ -1,4 +1,6 @@
-const Cloudant = require("cloudant");
+/* jshint esversion:6 */
+const Cloudant = require("cloudant"),
+    winston = require("../util/logger.js");
 
 var me = process.env.DATABASE_HOST;
 var key = process.env.DATABASE_USER;
@@ -29,7 +31,7 @@ function getAllDocs(dbName, limit) {
             }, limit: limit
         }, (err, data) => {
             if (err) {
-                console.log(err)
+                winston.error(`Cloudant API ${err}`)
                 reject(err);
             } else {
                 resolve(data);
@@ -50,7 +52,7 @@ function get1DayOldTweets(limit) {
 
     return new Promise((resolve, reject) => {
         // minus 1 day in milliseconds
-        let coefficient = 1000 * 60 * 60 * 24
+        let coefficient = 1000 * 60 * 60 * 24;
 
         databases[databaseNames.tweetDB].find({
             selector: {
@@ -89,8 +91,11 @@ function saveToDB(data) {
 
         databases[databaseNames.tweetDB].insert(data, function (err, body, header) {
             if (err) {
+                winston.error(`Cloudant API ${err}`)
                 reject(err.message);
             } else {
+                winston.silly(data);
+                winston.debug(`Cloudant API Saved data ${data}`);
                 resolve(true);
             }
         });
