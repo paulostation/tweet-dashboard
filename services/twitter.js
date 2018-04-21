@@ -1,5 +1,8 @@
+/* jshint esversion:6 */
 const saveToDB = require("../model/cloudant.js").saveToDB,
+    winston = require("../util/logger.js"),
     classificationController = require("../controllers/classificationController");
+
 
 let io;
 
@@ -11,7 +14,7 @@ module.exports = function (app) {
         fs = require('fs');
 
     io.on("connection", socket => {
-        console.log("User connected");
+        winston.debug("User connected");
     });
 
     var keys = {
@@ -24,35 +27,35 @@ module.exports = function (app) {
     var Twitter = new TwitterStream(keys, false);
 
     Twitter.on('connection success', function (uri) {
-        console.log('connection success', uri);
+        winston.debug('Twitter API connection success', uri);
     });
 
     Twitter.on('connection aborted', function () {
-        console.log('connection aborted');
+        winston.error('Twitter API connection aborted');
     });
 
     Twitter.on('connection error network', function (error) {
-        console.log('connection error network', error);
+        winston.error('Twitter API connection error network', error);
     });
 
     Twitter.on('connection error stall', function () {
-        console.log('connection error stall');
+        winston.error('Twitter API connection error stall');
     });
 
     Twitter.on('connection error http', function (httpStatusCode) {
-        console.log('connection error http', httpStatusCode);
+        winston.error(`Twitter API connection error: ${httpStatusCode}`);
     });
 
     Twitter.on('connection rate limit', function (httpStatusCode) {
-        console.log('connection rate limit', httpStatusCode);
+        winston.error(`Twitter API connection rate limit ${httpStatusCode}`);
     });
 
     Twitter.on('data error', function (error) {
-        console.log('data error', error);
+        winston.error('Twitter API data error', error);
     });
 
     Twitter.on('data keep-alive', function () {
-        console.log('data keep-alive');
+        winston.debug('Twitter API data keep-alive');
     });
 
 
@@ -79,10 +82,10 @@ module.exports = function (app) {
                             analysis: result
                         });
                         tweet.analysis = result;
-                        if (process.env.ENVIRONMENT === "prod")
+                        // if (process.env.ENVIRONMENT === "prod")
                             return saveToDB(tweet);
                     })
-                    .catch(console.error);
+                    .catch(winston.error);
             }
         }
     })

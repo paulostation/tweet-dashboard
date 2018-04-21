@@ -1,4 +1,5 @@
-require('dotenv').config()
+/* jshint esversion:6 */
+require('dotenv').config();
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -7,6 +8,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 const schedule = require("node-schedule");
+const winston_logger = require("./util/logger.js");
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -39,6 +41,8 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
+  
+  winston_logger.error(err.message);
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -50,7 +54,7 @@ app.use(function (err, req, res, next) {
 
 var j = schedule.scheduleJob('1 * * * *', function () {
 
-  console.log("Calling child process...");
+  winston_logger.debug("Calling child process...");
 
   const { spawn } = require('child_process');
 
@@ -60,7 +64,7 @@ var j = schedule.scheduleJob('1 * * * *', function () {
 
   deleteOldTweets.stdout.on('data', data => {
 
-    console.log(data.toString());
+    winston_logger.debug(data.toString());
 
   });
 
@@ -73,9 +77,9 @@ var j = schedule.scheduleJob('1 * * * *', function () {
   deleteOldTweets.on('close', code => {
 
     if (code !== 0)
-      console.log(stderr);
+      winston.error(stderr);
 
-    console.log(`child process exited with code ${code}`);
+    winston.debug(`child process exited with code ${code}`);
   });
 });
 

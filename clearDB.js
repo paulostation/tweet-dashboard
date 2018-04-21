@@ -1,15 +1,17 @@
-const cloudant = require("./model/cloudant");
+/* jshint esversion:6 */
+const cloudant = require("./model/cloudant"),
+    winston = require("./util/logger.js");
 
 function delete1DayOldTweets(remaning) {
 
-    console.log("deleting old tweets");
+    winston.debug("deleting old tweets");
 
     cloudant.get1DayOldTweets(10000)
         .then(data => {
 
             remaning = data.docs.length;
 
-            console.log("Number of tweets to delete: " + data.docs.length);
+            winson.debug("Number of tweets to delete: " + data.docs.length);
 
             tweetsToDelete = data.docs.map(tweet => {
 
@@ -23,13 +25,13 @@ function delete1DayOldTweets(remaning) {
         })
         .then(bulkResult => {
 
-            console.log(bulkResult);
-            
+            winston.debug(bulkResult);
+
             if (remaning > 100)
                 delete1DayOldTweets(remaning);
         })
         .catch(error => {
-            console.error(error);
+            winston.error(error);
         })
 }
 
