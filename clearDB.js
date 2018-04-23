@@ -11,7 +11,7 @@ function delete1DayOldTweets(remaning) {
 
             remaning = data.docs.length;
 
-            winson.debug("Number of tweets to delete: " + data.docs.length);
+            winston.debug("Number of tweets to delete: " + data.docs.length);
 
             tweetsToDelete = data.docs.map(tweet => {
 

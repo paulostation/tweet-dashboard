@@ -77,9 +77,9 @@ var j = schedule.scheduleJob('1 * * * *', function () {
   deleteOldTweets.on('close', code => {
 
     if (code !== 0)
-      winston.error(stderr);
+      winston_logger.error(stderr);
 
-    winston.debug(`child process exited with code ${code}`);
+    winston_logger.debug(`child process exited with code ${code}`);
   });
 });
 
