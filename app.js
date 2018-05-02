@@ -10,9 +10,10 @@ var bodyParser = require('body-parser');
 const schedule = require("node-schedule");
 const winston_logger = require("./util/logger.js");
 
-var index = require('./routes/index');
-var users = require('./routes/users');
-var tweets = require('./routes/tweets');
+const index = require('./routes/index'),
+  users = require('./routes/users'),
+  status = require('./routes/status'),
+  tweets = require('./routes/tweets');
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/status', status);
 app.use('/tweets', tweets);
 
 // catch 404 and forward to error handler
@@ -41,7 +43,7 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
-  
+
   winston_logger.error(err.message);
   // set locals, only providing error in development
   res.locals.message = err.message;
