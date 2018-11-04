@@ -1,5 +1,5 @@
 #!/bin/bash
-cf login -a https://api.ng.bluemix.net -u paulostation0@gmail.com -p $BLUEMIX_PASSWORD -o paulostation0@gmail.com -s dev
+ cf login -a https://api.ng.bluemix.net -u apikey -p $BLUEMIX_API_KEY -o paulostation0@gmail.com -s dev
 
 if [ "$TRAVIS_BRANCH" == "test" ]
     then
