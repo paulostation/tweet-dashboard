@@ -82,7 +82,7 @@ module.exports = function (app) {
                             analysis: result
                         });
                         tweet.analysis = result;
-                        // if (process.env.ENVIRONMENT === "prod")
+                        if (process.env.ENVIRONMENT === "prod")
                             return saveToDB(tweet);
                     })
                     .catch(winston.error);
