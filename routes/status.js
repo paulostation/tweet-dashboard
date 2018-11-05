@@ -1,21 +1,20 @@
 /* jshint esversion:6 */
 const express = require('express'),
     router = express.Router(),
-    cloudantAPI = require("../model/cloudant.js");
+    getAllTweets = require("../model/cloudant.js").getAllTweets;
 
-/* GET home page. */
 router.get('/', function (req, res, next) {
 
-    cloudantAPI.view("tweets-by-timestamp", 'positive', { group: true })
+    getAllTweets(1)
         .then(results => {
             // if there are tweets
-            if (results.length) {
+            if (results.docs.length) {
 
                 let coefficient = 1000 * 60 * 15;
 
                 let timeDiff = new Date().getTime() - coefficient;
 
-                let oldestCommitTimestamp = results.slice(-1)[0].key;
+                let oldestCommitTimestamp = results.docs.slice(-1)[0].key;
                 // and tweets are not older than threshold
                 if (oldestCommitTimestamp < timeDiff) {
 
