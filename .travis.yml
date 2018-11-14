@@ -1,14 +1,26 @@
-group: bluezone
+dist: trusty
+sudo: required
 language: node_js
-# enable cache to speed up NodeJS builds
+
+addons:
+  sonarcloud:
+    organization: "paulostation-github"
+jdk:
+  - oraclejdk8
 cache:
   directories:
+    # enable cache to speed up NodeJS builds
     - node_modules
+    - '$HOME/.sonar/cache'
 
 install:
   - npm install
 
 script:
+  - sonar-scanner 
+    -Dsonar.projectKey=metadata-extractor
+    -Dsonar.sources=. 
+    -Dsonar.host.url=https://sonarcloud.io 
   - npm test || true
 
 before_deploy:

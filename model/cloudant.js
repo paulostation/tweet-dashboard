@@ -25,10 +25,16 @@ function getAllDocs(dbName, limit) {
 
         databases[dbName].find({
             selector: {
-                _id: {
+                timestamp_ms: {
                     "$gt": 0
                 }
-            }, limit: limit
+            },
+            limit: limit,
+            sort: [
+                {
+                    timestamp_ms: "desc"
+                }
+            ]
         }, (err, data) => {
             if (err) {
                 winston.error(`Cloudant API ${err}`)
