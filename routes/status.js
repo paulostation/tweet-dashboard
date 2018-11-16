@@ -14,9 +14,10 @@ router.get('/', function (req, res, next) {
                 let coefficient = 1000 * 60 * 15;
 
                 let timeDiff = new Date().getTime() - coefficient;
-
-                let oldestCommitTimestamp = results.docs.slice(-1)[0].key;
                 
+                let oldestCommitTimestamp = results.docs[0].timestamp_ms;
+                winston.silly("Oldest commit date:",new Date(oldestCommitTimestamp / 1).toString())
+                winston.silly("Tweet date threshold:",new Date(timeDiff).toString())
                 // and tweets are not older than threshold
                 if (oldestCommitTimestamp < timeDiff) {
 
