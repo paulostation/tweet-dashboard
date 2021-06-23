@@ -1,7 +1,7 @@
 applications:
   - name: tweet-dashboard
-    random-route: false
+    random-route: true
     memory: 256M
   - name: tweet-dashboard-test
-    random-route: false
+    random-route: true
     memory: 128M
